@@ -11,6 +11,11 @@ APlayerCharacter::APlayerCharacter()
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
+	bUseControllerRotationYaw = false;
+
+	cam = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	cam->AttachTo(RootComponent);
+
 }
 
 // Called when the game starts or when spawned
@@ -34,6 +39,13 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	InputComponent->BindAxis("Horizontal", this, &APlayerCharacter::HorizontalMove);
 	InputComponent->BindAxis("Vertical", this, &APlayerCharacter::VerticalMove);
+	InputComponent->BindAxis("HorizontalRotation", this, &APlayerCharacter::HorizontalRot);
+}
+
+void APlayerCharacter::HorizontalRot(float value) {
+	if (value) {
+		AddActorLocalRotation(FRotator(0, value, 0));
+	}
 }
 
 void APlayerCharacter::HorizontalMove(float value) {
