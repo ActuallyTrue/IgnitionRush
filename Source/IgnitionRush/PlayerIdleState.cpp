@@ -21,10 +21,14 @@ void PlayerIdleState::Exit(PlayerStateInput& stateInput) {
 	
 }
 
-void PlayerIdleState::Tick(PlayerStateInput& stateInput) {
-	UE_LOG(LogTemp, Warning, TEXT("In Idle State!!!!"));
+void PlayerIdleState::Tick(PlayerStateInput& stateInput, float DeltaTime) {
+	//UE_LOG(LogTemp, Warning, TEXT("In Idle State!!!!"));
+	if (DeltaTime) {
+		player.MovePlayer();
+	}
+	
 }
 
 void PlayerIdleState::PhysicsTick(float SubstepDeltaTime, PlayerStateInput& stateInput) {
-
+	UE_LOG(LogTemp, Warning, TEXT("In Idle State!!!!"));
 }

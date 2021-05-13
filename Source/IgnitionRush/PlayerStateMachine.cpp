@@ -10,9 +10,9 @@ UPlayerStateMachine::UPlayerStateMachine()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	OnCalculateCustomPhysics.BindUObject(this, &UPlayerStateMachine::CustomPhysics);
+	player = Cast<APlayerCharacter>(GetOwner());
 	UPlayerStateMachine::InitStateMap();
-	// ...
+
 }
 
 
@@ -28,7 +28,7 @@ void UPlayerStateMachine::BeginPlay()
 
 void UPlayerStateMachine::InitStateMap()
 {
-	stateMap.Add(FString("PlayerIdleState"), new PlayerIdleState(*this));
+	stateMap.Add(FString("PlayerIdleState"), new PlayerIdleState(*this, *player));
 
 }
 
@@ -61,16 +61,7 @@ void UPlayerStateMachine::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		stateChanged = false;
 		currentState->Enter(*stateInput);
 	}
-	currentState->Tick(*stateInput);
-}
-
-void UPlayerStateMachine::CustomPhysics(float DeltaTime, FBodyInstance* BodyInstance) {
-	PhysicsTick(DeltaTime);
-}
-
-void UPlayerStateMachine::PhysicsTick_Implementation(float SubstepDeltaTime) {
-	//physics code goes here...
-	currentState->PhysicsTick(SubstepDeltaTime, *stateInput);
+	currentState->Tick(*stateInput, DeltaTime);
 }
 
 

@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "PlayerStateInput.h"
 #include "PhysicsPublic.h"
+#include "PlayerCharacter.h"
 #include "PlayerStateMachine.generated.h"
 
 class State;
@@ -28,22 +29,13 @@ protected:
 
 	State* currentState;
 	PlayerStateInput* stateInput;
+	APlayerCharacter* player;
 
 	bool stateChanged = false;
 
 	void InitStateMap();
 	void SetInitialState();
 	void ChangeState(FString stateName);
-
-
-	// Event called every physics tick and sub-step.
-	UFUNCTION(BlueprintNativeEvent)
-		void PhysicsTick(float SubstepDeltaTime);
-	virtual void PhysicsTick_Implementation(float SubstepDeltaTime); //if blueprint doesn't use the PhysicsTick above, the one on this line will be used.
-
-	//Custom physics Delegate
-	FCalculateCustomPhysics OnCalculateCustomPhysics;
-	void CustomPhysics(float DeltaTime, FBodyInstance* BodyInstance);
 
 
 public:	

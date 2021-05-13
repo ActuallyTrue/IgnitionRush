@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "Components/CapsuleComponent.h"
 #include "PlayerCharacter.h"
 
 // Sets default values
@@ -12,12 +12,11 @@ APlayerCharacter::APlayerCharacter()
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
 	bUseControllerRotationYaw = false;
-	//OnCalculateCustomPhysics.BindUObject(this, &APlayerCharacter::CustomPhysics);
 	cam = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	//cam->AttachTo(RootComponent);
+
 
 	arm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
-	arm->AttachTo(RootComponent);
+	arm->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
 	arm->TargetArmLength = 300.f;
 	arm->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
 
@@ -29,8 +28,9 @@ APlayerCharacter::APlayerCharacter()
 	arm->CameraRotationLagSpeed = 4.f;
 	arm->CameraLagMaxTimeStep = 1.f;*/
 
-	cam->AttachTo(arm, USpringArmComponent::SocketName);
+	cam->AttachToComponent(arm, FAttachmentTransformRules::KeepWorldTransform, USpringArmComponent::SocketName);
 
+	moveInput = FVector2D();
 	jumping = false;
 
 }
@@ -41,29 +41,15 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 }
-
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//Add custom physics on RootComponent's BodyInstance
-	/*if (RootComponent->GetBodyInstance() != NULL) { (not working right now I GUESS because the rootcomponent is just a scene component and it has no body instance????
-		RootComponent->GetBodyInstance()->AddCustomPhysics(OnCalculateCustomPhysics);
-	}*/
-
 	if (jumping) {
 		Jump();
 	}
 
 
-}
-
-void APlayerCharacter::CustomPhysics(float DeltaTime, FBodyInstance* BodyInstance) {
-	PhysicsTick(DeltaTime);
-}
-
-void APlayerCharacter::PhysicsTick_Implementation(float SubstepDeltaTime) {
-	//physics code goes here...
 }
 
 // Called to bind functionality to input
@@ -96,14 +82,32 @@ void APlayerCharacter::VerticalRot(float value) {
 
 void APlayerCharacter::HorizontalMove(float value) {
 	if (value) {
-		AddMovementInput(GetActorRightVector(), value);
+		moveInput.X = value;
+		///AddMovementInput(GetActorRightVector(), value);
+	}
+	else {
+		moveInput.X = 0;
 	}
 }
 
 void APlayerCharacter::VerticalMove(float value) {
 	if (value) {
-		AddMovementInput(GetActorForwardVector(), value);
+		moveInput.Y = value;
+		//AddMovementInput(GetActorForwardVector(), value);
 	}
+	else {
+		moveInput.Y = 0;
+	}
+}
+
+void APlayerCharacter::MovePlayer() {
+	if (moveInput.X) {
+		AddMovementInput(GetActorRightVector(), moveInput.X);
+	}
+	if (moveInput.Y) {
+		AddMovementInput(GetActorForwardVector(), moveInput.Y);
+	}
+	
 }
 
 void APlayerCharacter::CheckJump() {

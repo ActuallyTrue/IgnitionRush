@@ -12,7 +12,7 @@
 class IGNITIONRUSH_API PlayerIdleState : public State
 {
 public:
-	PlayerIdleState(UPlayerStateMachine& machine) : State(machine) {};
+	PlayerIdleState(UPlayerStateMachine& machine, APlayerCharacter& player) : State(machine, player) {};
 	~PlayerIdleState();
 
 	virtual void Init(PlayerStateInput& stateInput) override;
@@ -21,7 +21,7 @@ public:
 
 	virtual void Exit(PlayerStateInput& stateInput) override;
 
-	virtual void Tick(PlayerStateInput& stateInput) override;
+	virtual void Tick(PlayerStateInput& stateInput, float DeltaTime) override;
 
 	virtual void PhysicsTick(float SubstepDeltaTime, PlayerStateInput& stateInput) override;
 };
